@@ -1,0 +1,30 @@
+// Code goes here
+
+var response={
+  "code":200,
+  result:[
+    {name:"Adarsh Kumar",createdDate:"'2020-01-05 10:21:24"},
+    {name:"Phoolan Kumar",createdDate:"'2020-01-06 00:14:24"},
+    {name:"Devi Singh",createdDate:"'2020-01-04 10:29:24"},
+    {name:"Shivam Kau",createdDate:"'2020-01-03 20:29:24"},
+    {name:"Sumit Kumar",createdDate:"'2020-01-06 15:29:24"}
+    ]
+}
+
+var today = moment();
+
+
+
+let todayData=[]
+
+todayData=response.result.filter((crm)=>{
+  var date1 = moment(crm.createdDate);
+  var diffInDay = today.diff(date1, 'day');
+  if(diffInDay<=0){
+    return crm
+  }
+})
+
+console.log(todayData)
+
+
