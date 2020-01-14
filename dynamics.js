@@ -283,31 +283,40 @@
   
 // //initialize a CRM entity record object
 // //and specify fields with values that need to be updated
-
-       
-       if(response && !response['value'].emn_lastname){
-         
-         let agentId=''
-           agentId=response['value'][0].emn_agentid
-             let crmObj1={
-           emn_lastname:data.emn_lastname
-       }
+            
+          if(response.length>0){
+                        
+             response.value.map(async(crm_value)=>{   
+                          let agentId=crm_value.emn_agentid.toString()
+                         if(!crm_value.emn_lastname){
+                                 crm_value.emn_lastname=data.emn_lastname                      
+                        }
+                        if(!crm_value.emn_firstname){
+                                 crm_value.emn_firstname=data.emn_firstname                      
+                        }
+                         if(!crm_value.emn_mobilephone){
+                                 crm_value.emn_mobilephone=data.emn_mobilephone                      
+                        }
+                            dynamicsWebApi.update(agentId ,"emn_Agents",crm_value).then(function (id) {
+                                  console.log('update crm id', id);
+                                  id = id;
+                                  console.log("after update", response.value)
+                                  // res.json(wrapper.success({result}));
+                              }).catch(function (error) {
+                                  console.log("error----------", error)
+                                  // cb(error, null);
+                              })
+                              .catch(function (error){
+                                console.log("eror",error)
+                              });
+          })
+     
+   
       
          console.log("my crmobj",crmObj1)
         
 
-        dynamicsWebApi.update(agentId ,"emn_Agents",crmObj1).then(function (id) {
-          console.log('update crm id', id);
-          id = id;
-          console.log("after update", response.value)
-          // res.json(wrapper.success({result}));
-      }).catch(function (error) {
-          console.log("error----------", error)
-          // cb(error, null);
-      })
-      .catch(function (error){
-        console.log("eror",error)
-      });
+     
        }
   
  
@@ -326,6 +335,66 @@
 }
    }
 
+
+            
+async function webuserSave2(data) {
+      var request = {
+        collection: "emn_Agents",
+        select: [
+          "emn_firstname",
+          "emn_lastname",
+          "emn_mobilephone",
+          "emn_email"
+        ],
+        filter: "emn_email eq  '" + data.emn_email + "' "
+      };
+      let response = await dynamicsWebApi.retrieveAllRequest(request);
+
+      console.log("values are ", response.value);
+      console.log("data are ", data);
+
+      if (response.value.length > 0) {
+        response.value.map(async crm_value => {
+          let agentId = crm_value.emn_agentid.toString();
+          if (!crm_value.emn_lastname) {
+            crm_value.emn_lastname = data.emn_lastname;
+          }
+          if (!crm_value.emn_firstname) {
+            crm_value.emn_firstname = data.emn_firstname;
+          }
+          if (!crm_value.emn_mobilephone) {
+            crm_value.emn_mobilephone = data.emn_mobilephone;
+          }
+
+          dynamicsWebApi
+            .update(agentId, "emn_Agents", crm_value)
+            .then(function(id) {
+              console.log("update crm id", id);
+              id = id;
+              console.log("after update", response.value);
+              // res.json(wrapper.success({result}));
+            })
+            .catch(function(error) {
+              console.log("error----------", error);
+              // cb(error, null);
+            })
+            .catch(function(error) {
+              console.log("eror", error);
+            });
+        });
+      } else {
+        let user = dynamicsWebApi
+          .create(data, "emn_Agents")
+          .then(function(response) {
+            console.log("USER SAVED");
+          })
+          .catch(function(error) {
+            console.log("this ");
+          });
+      }
+    }
+  }
+}
 
 
 
