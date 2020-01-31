@@ -429,9 +429,10 @@ module.exports = class CrmsyncController {
                   let updatedDoc= await dynamicsWebApi.update(agentId, "emn_Agents", crm_value)
                   console.log("Updating the record Successfully at DynamicWebApi with updated value",updatedDoc)
                   crmupateCounter();
-                  resolve();
                 }
               })
+              
+               resolve();
             } else {
               console.log("Saving the record at DynamicWebApi with ",data)
               let saveDoc = await dynamicsWebApi.create(data, "emn_Agents")
