@@ -21,7 +21,9 @@ class Settings extends Component {
     super(props);
 
     this.state = {
-      isLoading: false
+      isLoading: false,
+      disableCronTime:true,
+      cronTime:""
     };
     /**event binding  */
     this.addEditSettings = this.addEditSettings.bind(this);
@@ -31,7 +33,22 @@ class Settings extends Component {
 
   componentWillMount() {
     this.getSettings();
+    this.getCronTime();
   }
+  
+  getCronTime(){
+     HTTP.Request("get", window.admin.checkCronLastTime).then(response => {
+       // TODO: I assuming that you are sending cron time in response.cron_time
+       // IMPORTANT to take care: Your response.cron_time should be in this format // 3:08 PM
+       let api_cron_time= response.cron_time
+       if(response.show_time){
+          this.setState({ disableCronTime:false,cronTime:api_cron_time })  
+        }else{
+          this.setState({ disableCronTime:true,cronTime: api_cron_time })  
+        }
+     })
+  }
+  
   render() {
     const { handleSubmit } = this.props;
     const { isLoading } = this.state;
@@ -191,7 +208,10 @@ class Settings extends Component {
               id="cronjob_time"
               name="cronjob_time"
               fieldName="Cronjob Time*"
-              // disabled={this.state.openHouseSelected}
+              input={{
+                    value:this.state.cronTime
+                    }}
+              disabled={this.state.disableCronTime}
               component={TimePickers}
             />
 
