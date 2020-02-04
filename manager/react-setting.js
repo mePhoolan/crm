@@ -208,9 +208,7 @@ class Settings extends Component {
               id="cronjob_time"
               name="cronjob_time"
               fieldName="Cronjob Time*"
-              input={{
-                    value:this.state.cronTime
-                    }}
+              value={this.state.cronTime}
               disabled={this.state.disableCronTime}
               component={TimePickers}
             />
