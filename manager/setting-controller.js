@@ -137,6 +137,25 @@ Setting.findOne({meta_key:"Web_seting"}).then((response)=>{
         })
       );
   }
+  
+   static handleChnageInCronTime(req, res) {
+    let reqData = req.query,
+      match = { meta_key: reqData.meta_key };
+    Setting.findOne(match)
+      .then(result => {
+        let today = moment( moment().format('LT') ,'LT')
+        let lastUpdatedAt = moment(result.cronTime,'LT')
+        let time = today.diff(lastUpdatedAt, "minutes"); // 14
+        if (time < 2) {
+            return true
+        } else {
+          return false
+        }
+      })
+      .catch(err =>
+        consoloe.log(err)
+      );
+  }
 
 
 // static savecron(){
@@ -151,11 +170,15 @@ Setting.findOne({meta_key:"Web_seting"}).then((response)=>{
       var job = new CronJob({
         cronTime: newtime,
         onTick: function() {
-          CrmsyncController.mongotoCrm(() => {
-            setTimeout(() => {
-              CrmsyncController.crmtoMongo();
-            }, 5000);
-          });
+          let shouldStart=this.handleChnageInCronTime();
+          if(shouldStart){
+             CrmsyncController.mongotoCrm(() => {
+                setTimeout(() => {
+                  CrmsyncController.crmtoMongo();
+                }, 5000);
+             });
+          } 
+         
         },
         start: false,
         utcOffset: -5
